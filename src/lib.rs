@@ -31,7 +31,9 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // this function call returns a Result, so we need to unwrap it with ?
     let code = fs::read_to_string(&config.file_path)?;
 
-    let tokens = tokenizer::tokenize(&code)?;
+    // here we let tokenize take ownership of code, since after this function
+    // we don't need to use it anymore
+    let tokens = tokenizer::tokenize(code)?;
 
     for token in tokens {
         println!("{token}");

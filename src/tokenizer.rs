@@ -1,7 +1,15 @@
+use std::fmt;
 pub struct Token {
     value: String,
     line: i32,
     token_type: Token_Type
+}
+
+// printing token for debugging purposes
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Token({}, line: {}, length: {})", self.value, self.line, self.value.len())
+    }
 }
 
 enum Token_Type {
@@ -11,24 +19,28 @@ enum Token_Type {
     Punctuation
 }
 
-fn push(tokens: &mut Vec<Token>, value: &mut String, line: i32) {
+// we let push take ownership of value, as we don't need
+// value after push anymore (we just clean it)
+fn push(tokens: &mut Vec<Token>, value: String, line: i32) -> String {
 
     if !value.is_empty() {
 
         let token = Token {
-            value: value.clone(),
+            value: value,
             line: line,
             token_type: Token_Type::Keyword
         };
 
         tokens.push(token);
-        value.clear();
-
+        String::new()
+    }
+    else {
+        value
     }
 
 }
 
-pub fn tokenize(code: &String) -> Result<Vec<Token>, &'static str> {
+pub fn tokenize(code: String) -> Result<Vec<Token>, &'static str> {
 
     // tokenize the code
     // iterate over code
@@ -40,15 +52,15 @@ pub fn tokenize(code: &String) -> Result<Vec<Token>, &'static str> {
 
         match c {
             '\n' => {
-                push(&mut tokens, &mut token_string, line);
+                token_string = push(&mut tokens, token_string, line);
                 line += 1;
             },
             '\r' | ' ' => {
-                push(&mut tokens, &mut token_string, line);
+                token_string = push(&mut tokens, token_string, line);
             },
             '{' | '}' | '(' | ')' | ';' => {
-                push(&mut tokens, &mut token_string, line);
-                push(&mut tokens, &mut c.to_string(), line);
+                token_string = push(&mut tokens, token_string, line);
+                push(&mut tokens, c.to_string(), line);
             },
             _ => {
                 token_string.push(c);
@@ -58,7 +70,7 @@ pub fn tokenize(code: &String) -> Result<Vec<Token>, &'static str> {
     }
 
     if !token_string.is_empty() {
-        tokens.push(token_string);
+        push(&mut tokens, token_string, line);
     }
         
     Ok(tokens)
