@@ -2,6 +2,7 @@ use std::fs;
 use std::error::Error;
 
 mod tokenizer;
+mod parser;
 pub struct Config {
     pub file_path: String
 }
@@ -33,11 +34,14 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     // here we let tokenize take ownership of code, since after this function
     // we don't need to use it anymore
-    let tokens = tokenizer::tokenize(code)?;
+    let mut tokens = tokenizer::tokenize(code)?;
 
-    for token in tokens {
+    for token in &tokens {
         println!("{token}");
     }
+
+    // parse into abstract syntax tree
+    let ast = parser::parse_program(&mut tokens)?;
 
     Ok(())
 
