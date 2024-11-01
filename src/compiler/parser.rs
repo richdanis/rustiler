@@ -189,6 +189,7 @@ pub fn parse_expression(tokens: &mut Vec<Token>) -> Result<Expression, &'static 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tokenizer::tokenize;
 
     #[test]
     fn numbers() {

@@ -1,5 +1,6 @@
 use std::fs;
 use std::error::Error;
+use std::process::Command;
 
 mod compiler {
     pub mod tokenizer;
@@ -53,6 +54,9 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let ast = parser::parse_program(&mut tokens)?;
 
     generate::generate_assembly(ast);
+
+    // call gcc to convert assembly to executable
+    Command::new("gcc").args(["main.s", "-o", "out"]).spawn().expect("gcc failed to convert file to executable.");
 
     Ok(())
 

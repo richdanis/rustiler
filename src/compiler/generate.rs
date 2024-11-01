@@ -24,7 +24,7 @@ fn generate_function(function: Function, code: &mut String) {
 fn generate_statements(statement: Statement, code: &mut String, offset: &str) {
     let mut line = format!("{offset}movl    ${}, %eax\n", statement.expression.value);
     code.push_str(&line);
-    line = format!("{offset}ret");
+    line = format!("{offset}ret\n");
     code.push_str(&line);
 
 }
