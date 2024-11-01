@@ -1,4 +1,5 @@
 use std::fmt;
+
 pub struct Token {
     pub value: String,
     pub line: i32

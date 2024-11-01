@@ -1,8 +1,17 @@
 use std::fs;
 use std::error::Error;
 
-mod tokenizer;
-mod parser;
+mod compiler {
+    pub mod tokenizer;
+    pub mod parser;
+    pub mod generate;
+}
+
+use compiler::generate;
+
+use crate::compiler::tokenizer;
+use crate::compiler::parser;
+
 pub struct Config {
     pub file_path: String
 }
@@ -42,6 +51,8 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     // parse into abstract syntax tree
     let ast = parser::parse_program(&mut tokens)?;
+
+    generate::generate_assembly(ast);
 
     Ok(())
 

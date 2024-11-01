@@ -10,24 +10,24 @@
 use crate::tokenizer::Token;
 
 pub struct Program {
-    function: Function
+    pub function: Function
 }
 
 pub struct Function {
-    identifier: String,
-    statement: Statement
+    pub identifier: String,
+    pub statement: Statement
 }
 
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub struct Statement {
-    expression: Expression
+    pub expression: Expression
 }
 
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub struct Expression {
-    value: String
+    pub value: String
 }
 
 #[derive(PartialEq)]
@@ -111,14 +111,14 @@ pub fn parse_function(tokens: &mut Vec<Token>) -> Result<Function, &'static str>
     let mut token_type = get_token_type(&token)?;
 
     if TokenType::Keyword(Keyword::Int) != token_type {
-        panic!("First token of statement should be \"return\"");
+        panic!("First token of function should be \"int\"");
     }
 
     token = tokens.remove(0);
     token_type = get_token_type(&token)?;
 
     if TokenType::Identifier != token_type {
-        panic!("First token of statement should be \"return\"");
+        panic!("Second token of function should be \"identifier\"");
     }
 
     let identifier = token.value.clone();
@@ -260,5 +260,32 @@ mod tests {
     #[test]
     fn programs() {
 
+    }
+
+    #[test]
+    fn simple_program() {
+        let program = "int main() {
+                             return 2;
+                             }";
+
+        let mut tokens = tokenize(String::from(program)).unwrap();
+
+        let ast = parse_program(&mut tokens).unwrap();
+
+        assert_eq!(ast.function.identifier, "main");
+        assert_eq!(ast.function.statement.expression.value, "2");
+
+    }
+
+    #[test]
+    fn wrong_keyword() {
+        let program = "int main() {
+            retun 2;
+            }";
+
+        let mut tokens = tokenize(String::from(program)).unwrap();
+
+        let ast = parse_program(&mut tokens).unwrap();
+        
     }
 }
